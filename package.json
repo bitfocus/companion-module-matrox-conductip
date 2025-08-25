@@ -1,0 +1,28 @@
+{
+	"name": "matrox-conductip",
+	"version": "1.0.0",
+	"main": "src/index.js",
+	"type": "module",
+	"author": "Håkon Nessjøen <haakon@bitfocus.io>",
+	"scripts": {
+		"check": "companion-module-check",
+		"build": "companion-module-build --dev",
+		"package": "companion-module-build",
+		"format": "prettier -w .",
+		"prettier": "prettier -w . --config node_modules/@companion-module/tools/.prettierrc.json"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-matrox-conductip.git"
+	},
+	"dependencies": {
+		"@companion-module/base": "^1.11.3"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "^2.3.0",
+		"prettier": "^3.5.3"
+	},
+	"prettier": "@companion-module/tools/.prettierrc.json",
+	"packageManager": "yarn@4.9.1"
+}

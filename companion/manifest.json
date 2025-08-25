@@ -1,0 +1,26 @@
+{
+	"id": "matrox-conductip",
+	"name": "matrox-conductip",
+	"shortname": "conductip",
+	"description": "Matrox ConductIP salvo control",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/bitfocus/companion-module-matrox-conductip.git",
+	"bugs": "https://github.com/bitfocus/companion-module-matrox-conductip/issues",
+	"maintainers": [
+		{
+			"name": "Håkon Nessjøen",
+			"email": "haakon@bitfocus.io"
+		}
+	],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../src/index.js"
+	},
+	"legacyIds": [],
+	"manufacturer": "Matrox",
+	"products": ["ConductIP"],
+	"keywords": ["SMTPE", "2110", "NMOS", "KVM"]
+}

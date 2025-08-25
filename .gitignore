@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+/pkg
+/pkg.tgz
+.yarn
+package-lock.json
