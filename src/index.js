@@ -1,6 +1,6 @@
 import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@companion-module/base'
 import { Buffer } from 'buffer'
-import https from 'https' // Using Node.js built-in https module
+import https from 'https'
 
 const API_TIMEOUT = 5000 // 5 seconds timeout for API requests
 const POLLING_INTERVAL = 1000 // 1 second interval for polling rooms/panels
@@ -14,6 +14,7 @@ class MatroxConductIPInstance extends InstanceBase {
 		this.panelSalvos = {}
 		this.pollTimer = null
 		this.currentStatus = InstanceStatus.UnknownError // Default status
+		this.currentStatusMessage = ''
 		this.customHttpsAgent = undefined // For self-signed certificate handling
 	}
 
@@ -39,8 +40,14 @@ class MatroxConductIPInstance extends InstanceBase {
 			// If the status changes, we might change the timer to a slower/faster polling interval
 			this.setupPolling()
 		}
-		super.updateStatus(status, message)
+
+		if (status !== this.currentStatus || message !== this.currentStatusMessage) {
+			this.currentStatus = status
+			this.currentStatusMessage = message
+			super.updateStatus(status, message)
+		}
 		this.currentStatus = status
+		this.currentStatusMessage = message
 	}
 
 	getStatus() {
@@ -138,15 +145,14 @@ class MatroxConductIPInstance extends InstanceBase {
 
 		this.roomsData = []
 		this.panelSalvos = {}
-		// It's generally safest to re-run the full init logic,
-		// as init also calls updateActionsAndPresets and starts polling if config is valid.
+
 		await this.init(config, false)
 	}
 
 	async makeApiRequest(method, endpoint, requestBodyObj = null) {
 		if (!this.config.host || !this.config.username || !this.config.password) {
 			this.updateStatus(InstanceStatus.BadConfig, 'Configuration is incomplete.')
-			return null // Return null directly, not a Promise wrapping null, to simplify calling code
+			return null // Return null directly
 		}
 
 		const upperMethod = method.toUpperCase()
@@ -170,7 +176,6 @@ class MatroxConductIPInstance extends InstanceBase {
 				method: upperMethod,
 				headers: {
 					Authorization: `Basic ${Buffer.from(`${this.config.username}:${this.config.password}`).toString('base64')}`,
-					// User-Agent is good practice
 					'User-Agent': `Companion-Module/${this.id}`,
 				},
 				timeout: API_TIMEOUT, // in milliseconds
@@ -212,7 +217,7 @@ class MatroxConductIPInstance extends InstanceBase {
 						}
 						if (responseData.trim() === '') {
 							// Handle empty but successful (non-204) responses
-							resolve(null) // Or true, if appropriate for your API contract
+							resolve(null)
 							return
 						}
 						try {
@@ -237,7 +242,7 @@ class MatroxConductIPInstance extends InstanceBase {
 							detailedMessage = `Authentication Failed (${res.statusCode})`
 						} else if (res.statusCode === 404) {
 							detailedMessage = `API Endpoint Not Found (${res.statusCode})`
-						} // Add more specific 4xx/5xx handling if needed
+						}
 
 						this.updateStatus(statusToSet, detailedMessage)
 						resolve(null)
@@ -246,7 +251,7 @@ class MatroxConductIPInstance extends InstanceBase {
 			})
 
 			req.on('timeout', () => {
-				req.destroy() // Important to destroy the socket on timeout
+				req.destroy()
 				const timeoutMessage = `Request to ${options.hostname}${options.path} timed out after ${API_TIMEOUT}ms`
 				this.log('warn', timeoutMessage)
 				this.updateStatus(InstanceStatus.ConnectionFailure, 'Request Timeout')
@@ -256,7 +261,6 @@ class MatroxConductIPInstance extends InstanceBase {
 			req.on('error', (e) => {
 				this.log('warn', `HTTP Request to ${options.hostname}${options.path} failed: ${e.message}`)
 				let userMessage = `Request failed: ${e.code || e.message}`
-				let statusToSet = InstanceStatus.ConnectionFailure
 
 				if (e.code === 'ECONNREFUSED') {
 					userMessage = 'Connection refused'
@@ -264,14 +268,12 @@ class MatroxConductIPInstance extends InstanceBase {
 					userMessage = 'Host not found or DNS lookup failure'
 				} else if (e.code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE' || e.message.toLowerCase().includes('certificate')) {
 					if (!this.config.allowUnauthorized) {
-						// Check if user intended to bypass this
 						userMessage = 'Certificate validation error. Try "Allow Unverified Certificates".'
 					} else {
-						// If allowUnauthorized is true and still get cert error, it's a more complex SSL issue
 						userMessage = `SSL Certificate error (even with bypass): ${e.message}`
 					}
 				}
-				this.updateStatus(statusToSet, userMessage)
+				this.updateStatus(InstanceStatus.ConnectionFailure, userMessage)
 				resolve(null)
 			})
 
@@ -309,14 +311,11 @@ class MatroxConductIPInstance extends InstanceBase {
 		}
 		// this.log('debug',"Fetching rooms and panels...")
 		const roomsInfo = await this.makeApiRequest('GET', '/rooms/info')
-		this.log('debug', `Fetched rooms/panels data: ${JSON.stringify(roomsInfo)}`)
+		//this.log('debug', `Fetched rooms/panels data: ${JSON.stringify(roomsInfo)}`)
 
 		if (roomsInfo && Array.isArray(roomsInfo)) {
 			this.roomsData = roomsInfo
-			if (this.getStatus() !== InstanceStatus.ConnectionFailure && this.getStatus() !== InstanceStatus.BadConfig) {
-				this.updateStatus(InstanceStatus.Ok)
-				this.setupPolling()
-			}
+			this.updateStatus(InstanceStatus.Ok)
 
 			const newPanelSalvos = {}
 			const panelPromises = []
@@ -359,7 +358,7 @@ class MatroxConductIPInstance extends InstanceBase {
 				'warn',
 				`fetchRoomsAndPanels: Received invalid data format. Expected array, got: ${JSON.stringify(roomsInfo)}`,
 			)
-			this.updateStatus(InstanceStatus.UnknownError, 'Invalid data format from API (rooms)')
+			this.updateStatus(InstanceStatus.UnknownWarning, 'Invalid data format from API (rooms)')
 			
 		}
 	}
@@ -385,8 +384,8 @@ class MatroxConductIPInstance extends InstanceBase {
 			'warn',
 			`Invalid data format for panel ${panelId} salvos. Expected 'salvos' array. Got: ${JSON.stringify(panelInfo)}`,
 		)
-		// Optionally update status if this specific failure is critical and not covered by a general API error
-		// this.updateStatus(InstanceStatus.UnknownError, `Invalid data for panel ${panelId} salvos`);
+
+		this.updateStatus(InstanceStatus.UnknownWarning, `Invalid data for panel ${panelId}`);
 		return []
 	}
 
@@ -500,7 +499,6 @@ class MatroxConductIPInstance extends InstanceBase {
 					},
 				],
 				callback: async (actionEvent) => {
-					// Parameter is CompanionActionEvent
 					const { panelId, salvoId } = actionEvent.options
 					if (salvoId) {
 						this.log('debug', `Action: Run salvo ${salvoId} (Panel context: ${panelId})`)
@@ -535,31 +533,27 @@ class MatroxConductIPInstance extends InstanceBase {
 					for (const salvo of salvos) {
 						presets.push({
 							type: 'button',
-							category: `${room.label} - ${panel.label || 'Room'}`, // Category for grouping presets
-							name: `Run ${salvo.label || 'Unnamed Salvo'} on ${panel.label || 'Panel'}`, // Name visible in preset list
+							category: `${room.label} - ${panel.label || 'Room'}`,
+							name: `Run ${salvo.label || 'Unnamed Salvo'} on ${panel.label || 'Panel'}`,
 							style: {
-								// Button style
 								...defaultStyle, // Apply defaults
-								text: `$(this:salvo_${salvo.id})`, // Text on the button, \n for new line
+								text: `$(this:salvo_${salvo.id})`, // Dynamic label for the button
 							},
 							steps: [
-								// Steps to execute when button is pressed
 								{
 									down: [
-										// Actions on 'button down'
 										{
-											actionId: 'run_salvo', // Must match the ID in getActions()
+											actionId: 'run_salvo',
 											options: {
-												// Options for the action
 												panelId: panel.id,
 												salvoId: salvo.id,
 											},
 										},
 									],
-									up: [], // Actions on 'button up' (optional)
+									up: [],
 								},
 							],
-							feedbacks: [], // Feedbacks to apply to this button (optional)
+							feedbacks: [],
 						})
 					}
 				}
