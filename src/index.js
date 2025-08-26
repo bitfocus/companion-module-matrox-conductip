@@ -2,8 +2,9 @@ import { InstanceBase, InstanceStatus, runEntrypoint, combineRgb } from '@compan
 import { Buffer } from 'buffer'
 import https from 'https' // Using Node.js built-in https module
 
-const API_TIMEOUT = 1000 // 5 seconds for API requests
-const POLLING_INTERVAL = 1000 // 1 second for polling rooms/panels
+const API_TIMEOUT = 5000 // 5 seconds timeout for API requests
+const POLLING_INTERVAL = 1000 // 1 second interval for polling rooms/panels
+const ERROR_POLLING_INTERVAL = 5000 // 5 second interval for polling rooms/panels when there is an error
 
 class MatroxConductIPInstance extends InstanceBase {
 	constructor(internal) {
@@ -34,6 +35,10 @@ class MatroxConductIPInstance extends InstanceBase {
 	}
 
 	updateStatus(status, message = undefined) {
+		if (status !== this.currentStatus) {
+			// If the status changes, we might change the timer to a slower/faster polling interval
+			this.setupPolling()
+		}
 		super.updateStatus(status, message)
 		this.currentStatus = status
 	}
@@ -283,9 +288,10 @@ class MatroxConductIPInstance extends InstanceBase {
 			this.pollTimer = null
 		}
 		if (this.config.host && this.config.username && this.config.password) {
+			const valid = this.getStatus() === InstanceStatus.Ok
 			this.pollTimer = setInterval(async () => {
 				await this.fetchRoomsAndPanels()
-			}, POLLING_INTERVAL)
+			}, valid ? POLLING_INTERVAL : ERROR_POLLING_INTERVAL)
 			this.log('debug', 'Polling started.')
 		} else {
 			this.log('debug', 'Polling not started due to missing config.')
@@ -309,6 +315,7 @@ class MatroxConductIPInstance extends InstanceBase {
 			this.roomsData = roomsInfo
 			if (this.getStatus() !== InstanceStatus.ConnectionFailure && this.getStatus() !== InstanceStatus.BadConfig) {
 				this.updateStatus(InstanceStatus.Ok)
+				this.setupPolling()
 			}
 
 			const newPanelSalvos = {}
@@ -353,6 +360,7 @@ class MatroxConductIPInstance extends InstanceBase {
 				`fetchRoomsAndPanels: Received invalid data format. Expected array, got: ${JSON.stringify(roomsInfo)}`,
 			)
 			this.updateStatus(InstanceStatus.UnknownError, 'Invalid data format from API (rooms)')
+			
 		}
 	}
 
