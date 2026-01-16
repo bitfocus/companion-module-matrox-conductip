@@ -17,12 +17,12 @@
 		"url": "git+https://github.com/bitfocus/companion-module-matrox-conductip.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "^1.11.3"
+		"@companion-module/base": "^1.14.1"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.3.0",
-		"prettier": "^3.5.3"
+		"@companion-module/tools": "^2.5.0",
+		"prettier": "^3.7.4"
 	},
 	"prettier": "@companion-module/tools/.prettierrc.json",
-	"packageManager": "yarn@4.9.1"
+	"packageManager": "yarn@4.12.0"
 }
