@@ -1,9 +1,8 @@
 {
 	"name": "matrox-conductip",
 	"version": "1.0.2",
-	"main": "src/index.js",
+	"main": "dist/index.js",
 	"type": "module",
-	"author": "Håkon Nessjøen <haakon@bitfocus.io>",
 	"scripts": {
 		"check": "companion-module-check",
 		"build": "companion-module-build --dev",
@@ -23,8 +22,10 @@
 	},
 	"devDependencies": {
 		"@companion-module/tools": "^2.5.0",
+		"@types/node": "^25.0.7",
 		"eslint": "^9.39.2",
-		"prettier": "^3.7.4"
+		"prettier": "^3.7.4",
+		"typescript": "^5.9.3"
 	},
 	"prettier": "@companion-module/tools/.prettierrc.json",
 	"packageManager": "yarn@4.12.0"
