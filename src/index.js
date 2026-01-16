@@ -291,9 +291,12 @@ class MatroxConductIPInstance extends InstanceBase {
 		}
 		if (this.config.host && this.config.username && this.config.password) {
 			const valid = this.getStatus() === InstanceStatus.Ok
-			this.pollTimer = setInterval(async () => {
-				await this.fetchRoomsAndPanels()
-			}, valid ? POLLING_INTERVAL : ERROR_POLLING_INTERVAL)
+			this.pollTimer = setInterval(
+				async () => {
+					await this.fetchRoomsAndPanels()
+				},
+				valid ? POLLING_INTERVAL : ERROR_POLLING_INTERVAL,
+			)
 			this.log('debug', 'Polling started.')
 		} else {
 			this.log('debug', 'Polling not started due to missing config.')
@@ -359,7 +362,6 @@ class MatroxConductIPInstance extends InstanceBase {
 				`fetchRoomsAndPanels: Received invalid data format. Expected array, got: ${JSON.stringify(roomsInfo)}`,
 			)
 			this.updateStatus(InstanceStatus.UnknownWarning, 'Invalid data format from API (rooms)')
-			
 		}
 	}
 
@@ -385,7 +387,7 @@ class MatroxConductIPInstance extends InstanceBase {
 			`Invalid data format for panel ${panelId} salvos. Expected 'salvos' array. Got: ${JSON.stringify(panelInfo)}`,
 		)
 
-		this.updateStatus(InstanceStatus.UnknownWarning, `Invalid data for panel ${panelId}`);
+		this.updateStatus(InstanceStatus.UnknownWarning, `Invalid data for panel ${panelId}`)
 		return []
 	}
 
