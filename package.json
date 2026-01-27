@@ -9,6 +9,7 @@
 		"package": "companion-module-build",
 		"format": "prettier -w .",
 		"prettier": "prettier -w . --config node_modules/@companion-module/tools/.prettierrc.json",
+		"dev": "tsc -p tsconfig.build.json --watch",
 		"lint:raw": "eslint",
 		"lint": "run lint:raw ."
 	},

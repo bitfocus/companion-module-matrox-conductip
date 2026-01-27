@@ -1,20 +1,8 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2019",
-		"noImplicitAny": true,
-		"removeComments": true,
-		"preserveConstEnums": true,
-		"sourceMap": true,
-		"outDir": "./dist",
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"strict": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"declaration": true,
-		"skipLibCheck": true
-	},
+	"extends": "./tsconfig.build.json",
 	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules/**"],
+	"compilerOptions": {
+		"types": ["node" /* , "jest" ] // uncomment this if using jest */]
+	}
 }
