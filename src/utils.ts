@@ -25,7 +25,7 @@ export function getPanelChoices(api: ConductIPAPI): { id: string; label: string 
 export function getSalvoChoices(api: ConductIPAPI): { id: string; label: string }[] {
 	const salvoChoices: { id: string; label: string }[] = []
 	//This isn't working in the API rn, no matter what user permissions.
-	salvoChoices.push({ id: 'remove_all_connections', label: 'Remove All Connections' })
+	//salvoChoices.push({ id: 'remove_all_connections', label: 'Remove All Connections' })
 	for (const room of api.roomsData) {
 		if (room.panels) {
 			for (const panel of room.panels) {
