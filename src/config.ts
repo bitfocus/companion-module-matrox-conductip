@@ -14,7 +14,8 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			id: 'info',
 			width: 12,
 			label: 'Information',
-			value: 'Make sure to assign at least one room and panel to the user you use specify below.',
+			value:
+				'Make sure to assign at least one room and panel to the user you use specify below. ConductIP software version 2.04.00 or higher is required.',
 		},
 		{
 			type: 'textinput',

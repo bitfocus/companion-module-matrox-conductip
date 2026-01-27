@@ -1,6 +1,6 @@
 {
 	"name": "matrox-conductip",
-	"version": "1.0.2",
+	"version": "1.1.0-beta1",
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
@@ -19,7 +19,7 @@
 		"url": "git+https://github.com/bitfocus/companion-module-matrox-conductip.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "^1.14.1"
+		"@companion-module/base": "~1.13.0"
 	},
 	"devDependencies": {
 		"@companion-module/tools": "^2.5.0",
