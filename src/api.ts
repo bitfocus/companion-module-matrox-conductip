@@ -21,7 +21,10 @@ export class ConductIPAPI {
 	}
 
 	public configureHttpsAgent(): void {
-		if (this.controller.config.allowUnauthorized) {
+		// Explicitly check for true, treating undefined/false as requiring certificate validation
+		const allowUnauthorized = this.controller.config.allowUnauthorized === true
+
+		if (allowUnauthorized) {
 			// Create new agent only if not already created with correct setting
 			if (
 				!this.customHttpsAgent ||
@@ -34,8 +37,8 @@ export class ConductIPAPI {
 			}
 		} else {
 			// Revert to default (undefined means use Node's default https.globalAgent)
+			// Always reset to ensure clean state, especially on first config update
 			if (this.customHttpsAgent) {
-				// only change if it was previously custom
 				this.customHttpsAgent = undefined
 				this.controller.log('debug', 'HTTPS agent configured to VERIFY certificates (default).')
 			}
@@ -107,6 +110,9 @@ export class ConductIPAPI {
 				res.on('end', () => {
 					if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
 						// Connection successful - reset error logging flag
+						if (this.connectionErrorLogged) {
+							this.controller.updateStatus(InstanceStatus.Ok)
+						}
 						this.connectionErrorLogged = false
 						if (upperMethod === 'POST' && endpoint.startsWith('/salvos/') && res.statusCode === 200) {
 							resolve(true) // Successfully ran salvo
@@ -218,6 +224,7 @@ export class ConductIPAPI {
 	public async fetchInitialData(): Promise<void> {
 		this.controller.log('debug', 'Fetching initial data...')
 		await this.fetchRoomsAndPanels()
+		this.controller.updateStatus(InstanceStatus.Ok)
 	}
 
 	private areRoomsEqual(rooms1: Room[], rooms2: Room[]): boolean {
@@ -264,13 +271,13 @@ export class ConductIPAPI {
 		if (!this.controller.config.host || !this.controller.config.username || !this.controller.config.password) {
 			return
 		}
-		// this.log('debug',"Fetching rooms and panels...")
+		//this.controller.log('debug',"Fetching rooms and panels...")
 		const roomsInfo = await this.makeApiRequest('GET', '/rooms/info')
-		this.controller.log('debug', `Fetched rooms/panels data: ${JSON.stringify(roomsInfo)}`)
+		//this.controller.log('debug', `Fetched rooms/panels data: ${JSON.stringify(roomsInfo)}`)
 
 		if (roomsInfo && Array.isArray(roomsInfo)) {
 			const newRoomsData = roomsInfo as Room[]
-			this.controller.updateStatus(InstanceStatus.Ok)
+			//	this.controller.updateStatus(InstanceStatus.Ok)
 
 			// Extract salvos directly from panels in the response
 			const newPanelSalvos: { [panelId: string]: Salvo[] } = {}
@@ -331,7 +338,6 @@ export class ConductIPAPI {
 			this.controller.log('error', 'fetchSalvosForPanel called with no panelId')
 			return [] // Return empty array to prevent issues
 		}
-		// this.log('debug',`Fetching salvos for panel ${panelId}...`)
 		const panelInfo = await this.makeApiRequest('GET', `/panels/info/${panelId}`)
 		if (panelInfo?.salvos && Array.isArray(panelInfo.salvos)) {
 			return panelInfo.salvos
@@ -357,7 +363,7 @@ export class ConductIPAPI {
 		const oldActiveSalvos = new Set(this.activeSalvos)
 		if (activeSalvosInfo && Array.isArray(activeSalvosInfo)) {
 			this.activeSalvos = new Set(activeSalvosInfo.map((salvo: Salvo) => salvo.id))
-			this.controller.log('debug', `Fetched active salvos: ${Array.from(this.activeSalvos).join(', ')}`)
+			//this.controller.log('debug', `Fetched active salvos: ${Array.from(this.activeSalvos).join(', ')}`)
 		} else if (activeSalvosInfo === null) {
 			this.controller.log('debug', 'Polling: Failed to fetch active salvos, makeApiRequest returned null.')
 			// Clear active salvos on failure
