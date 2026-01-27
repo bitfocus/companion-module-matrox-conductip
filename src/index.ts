@@ -5,6 +5,7 @@ import { GetActions } from './actions.js'
 import { GetPresets } from './presets.js'
 import { GetVariables, GetVariableValues } from './variables.js'
 import { ConductIPController } from './types.js'
+import { GetFeedbacks } from './feedbacks.js'
 
 class MatroxConductIPInstance extends InstanceBase<ModuleConfig> implements ConductIPController {
 	public config: ModuleConfig = {}
@@ -22,6 +23,7 @@ class MatroxConductIPInstance extends InstanceBase<ModuleConfig> implements Cond
 		this.api.configureHttpsAgent()
 
 		this.updateActions()
+		this.updateFeedbacks()
 		this.updatePresets()
 		this.updateVariables()
 
@@ -64,7 +66,11 @@ class MatroxConductIPInstance extends InstanceBase<ModuleConfig> implements Cond
 	}
 
 	updateActions(): void {
+		console.log('Updating actions')
 		this.setActionDefinitions(GetActions(this.api))
+	}
+	updateFeedbacks(): void {
+		this.setFeedbackDefinitions(GetFeedbacks(this.api))
 	}
 
 	updateVariables(): void {

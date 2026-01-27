@@ -2,7 +2,7 @@
 	"id": "matrox-conductip",
 	"name": "matrox-conductip",
 	"shortname": "conductip",
-	"description": "Matrox ConductIP salvo control",
+	"description": "Matrox ConductIP control",
 	"version": "0.0.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-matrox-conductip.git",

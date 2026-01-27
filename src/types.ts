@@ -9,6 +9,7 @@ export interface Salvo {
 export interface Panel {
 	id: string
 	label: string
+	salvos?: Salvo[]
 }
 
 export interface Room {
@@ -22,6 +23,8 @@ export interface ConductIPController {
 	log(level: LogLevel, message: string): void
 	updateStatus(status: InstanceStatus, message?: string | null): void
 	updateActions(): void
+	updateFeedbacks(): void
+	checkFeedbacks(feedbackId: string): void
 	updateVariables(): void
 	updatePresets(): void
 }

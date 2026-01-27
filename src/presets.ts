@@ -1,14 +1,15 @@
-import { combineRgb, CompanionPresetDefinitions, CompanionButtonStyleProps } from '@companion-module/base'
+import { CompanionPresetDefinitions } from '@companion-module/base'
 import { ConductIPAPI } from './api.js'
+import { COLORS } from './utils.js'
 
 export function GetPresets(api: ConductIPAPI): CompanionPresetDefinitions {
 	const presets: CompanionPresetDefinitions = {}
-	const defaultStyle: CompanionButtonStyleProps = {
+	/* const defaultStyle: CompanionButtonStyleProps = {
 		text: '',
 		size: 'auto',
-		color: combineRgb(255, 255, 255),
-		bgcolor: combineRgb(0, 0, 0),
-	}
+		color: COLORS.WHITE,
+		bgcolor: COLORS.BLACK,
+	} */
 
 	for (const room of api.roomsData) {
 		if (room.panels && Array.isArray(room.panels)) {
@@ -20,7 +21,9 @@ export function GetPresets(api: ConductIPAPI): CompanionPresetDefinitions {
 						category: `${room.label} - ${panel.label || 'Room'}`,
 						name: `Run ${salvo.label || 'Unnamed Salvo'} on ${panel.label || 'Panel'}`,
 						style: {
-							...defaultStyle,
+							color: COLORS.WHITE,
+							bgcolor: COLORS.MATROX_BLUE_INACTIVE,
+							size: 'auto',
 							text: `$(this:salvo_${salvo.id})`,
 						},
 						steps: [
@@ -37,7 +40,18 @@ export function GetPresets(api: ConductIPAPI): CompanionPresetDefinitions {
 								up: [],
 							},
 						],
-						feedbacks: [],
+						feedbacks: [
+							{
+								feedbackId: 'salvo_active',
+								options: {
+									salvoId: salvo.id,
+								},
+								style: {
+									color: COLORS.WHITE,
+									bgcolor: COLORS.MATROX_BLUE_ACTIVE,
+								},
+							},
+						],
 					}
 				}
 			}
