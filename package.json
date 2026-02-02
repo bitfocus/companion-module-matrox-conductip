@@ -1,15 +1,17 @@
 {
 	"name": "matrox-conductip",
-	"version": "1.0.2",
-	"main": "src/index.js",
+	"version": "1.1.0",
+	"main": "dist/main.js",
 	"type": "module",
-	"author": "Håkon Nessjøen <haakon@bitfocus.io>",
 	"scripts": {
-		"check": "companion-module-check",
-		"build": "companion-module-build --dev",
-		"package": "companion-module-build",
+		"postinstall": "husky",
 		"format": "prettier -w .",
-		"prettier": "prettier -w . --config node_modules/@companion-module/tools/.prettierrc.json"
+		"package": "run build && companion-module-build",
+		"build": "rimraf dist && run build:main",
+		"build:main": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch",
+		"lint:raw": "eslint",
+		"lint": "run lint:raw ."
 	},
 	"license": "MIT",
 	"repository": {
@@ -17,12 +19,27 @@
 		"url": "git+https://github.com/bitfocus/companion-module-matrox-conductip.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "^1.11.3"
+		"@companion-module/base": "~1.13.6"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.6.1",
-		"prettier": "^3.5.3"
+		"@companion-module/tools": "^2.5.0",
+		"@types/node": "^22.19.7",
+		"eslint": "^9.39.2",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.8.1",
+		"rimraf": "^6.1.2",
+		"typescript": "~5.9.3",
+		"typescript-eslint": "^8.53.1"
+	},
+	"lint-staged": {
+		"*.{css,json,md,scss}": [
+			"prettier --write"
+		],
+		"*.{ts,tsx,js,jsx}": [
+			"yarn lint:raw --fix"
+		]
 	},
 	"prettier": "@companion-module/tools/.prettierrc.json",
-	"packageManager": "yarn@4.9.1"
+	"packageManager": "yarn@4.12.0"
 }

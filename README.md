@@ -1,10 +1,27 @@
 # Matrox ConductIP
 
-## Overview
+## Getting Started
 
-This module allows you to run salvos via a Matrox ConductIP device.
+See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
 
-## Features
+### v1.1.0
 
-- Periodic fetching of available rooms and panels every second.
-- Variables to show the current name of a salvo in buttons, so you can keep labels up to date from ConductIP
+**Note: ConductIP software version 2.04.0 or higher is required to use versions**
+
+- New
+  - Support for new and improved API included with ConductIP 2.04.0. This prevent timeout and connection issues.
+  - Feedback: Preset Active
+
+### v1.0.2
+
+- Fix
+  - Properly update status on connection recovery
+
+### v1.0.1
+
+- Fix
+  - Proper node-modules usage
+
+### v1.0.0
+
+- Initial Release
