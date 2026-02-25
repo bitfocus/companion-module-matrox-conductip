@@ -7,7 +7,7 @@ See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
 ### v1.2.0
 
 - New
-  - Support for "Remove All Connections" preset
+  - Support for "No Connections" preset
 
 ### v1.1.0
 

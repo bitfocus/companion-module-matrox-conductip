@@ -26,6 +26,10 @@ export function GetFeedbacks(api: ConductIPAPI): CompanionFeedbackDefinitions {
 		],
 		callback: async (feedback: CompanionFeedbackBooleanEvent) => {
 			const { salvoId } = feedback.options as { salvoId: string }
+			console.log(api.activeSalvos.size)
+			if (salvoId === 'no_connections') {
+				return api.activeSalvos.size === 0 || false
+			}
 			return api.activeSalvos.has(salvoId) || false
 		},
 	}

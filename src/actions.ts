@@ -27,7 +27,7 @@ export function GetActions(api: ConductIPAPI): CompanionActionDefinitions {
 			],
 			callback: async (actionEvent: CompanionActionEvent) => {
 				const { panelId, salvoId } = actionEvent.options as { panelId: string; salvoId: string }
-				if (salvoId === 'remove_all_connections') {
+				if (salvoId === 'no_connections') {
 					await api.makeApiRequest('DELETE', `/panels/${panelId}/connections`)
 				} else if (salvoId) {
 					await api.makeApiRequest('POST', `/salvos/${salvoId}`)
