@@ -7,7 +7,8 @@ See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
 ### v1.2.0
 
 - New
-  - Support for "No Connections" preset
+  - Support for default "No Connections" in Panel - Take Preset action
+  - Feedback: Panel - No Connections, for when a selected panel has no connections
 
 ### v1.1.0
 

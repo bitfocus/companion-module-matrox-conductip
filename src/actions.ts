@@ -5,7 +5,7 @@ import { getPanelChoices, getSalvoChoices } from './utils.js'
 export function GetActions(api: ConductIPAPI): CompanionActionDefinitions {
 	return {
 		run_salvo: {
-			name: 'Take Preset',
+			name: 'Panel -Take Preset',
 			options: [
 				{
 					type: 'dropdown',

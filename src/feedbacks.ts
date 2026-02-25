@@ -8,7 +8,7 @@ export function GetFeedbacks(api: ConductIPAPI): CompanionFeedbackDefinitions {
 
 	feedbacks.salvo_active = {
 		type: 'boolean',
-		name: 'Preset Active',
+		name: 'Preset - Active',
 		description: 'The selected preset is active',
 		defaultStyle: {
 			color: COLORS.WHITE,
@@ -31,7 +31,7 @@ export function GetFeedbacks(api: ConductIPAPI): CompanionFeedbackDefinitions {
 	}
 	feedbacks.no_connections = {
 		type: 'boolean',
-		name: 'No Connections',
+		name: 'Panel - No Connections',
 		description: 'The selected panel has no connections',
 		defaultStyle: {
 			color: COLORS.WHITE,
