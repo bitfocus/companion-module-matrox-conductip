@@ -318,7 +318,8 @@ export class ConductIPAPI {
 				}
 				// Active salvos changed - update feedbacks
 				if (activeSalvosChanged) {
-					this.controller.updateFeedbacks()
+					this.controller.checkFeedbacks('salvo_active')
+					this.controller.checkFeedbacks('no_connections')
 				}
 			}
 		} else if (roomsInfo === null) {
@@ -379,6 +380,7 @@ export class ConductIPAPI {
 		// Only check feedbacks if active salvos changed
 		if (changed) {
 			this.controller.checkFeedbacks('salvo_active')
+			this.controller.checkFeedbacks('no_connections')
 		}
 		return changed
 	}

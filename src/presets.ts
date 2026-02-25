@@ -42,9 +42,9 @@ export function GetPresets(api: ConductIPAPI): CompanionPresetDefinitions {
 					],
 					feedbacks: [
 						{
-							feedbackId: 'salvo_active',
+							feedbackId: 'no_connections',
 							options: {
-								salvoId: 'no_connections',
+								panelId: panel.id,
 							},
 							style: {
 								color: COLORS.WHITE,
