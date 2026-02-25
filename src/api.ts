@@ -312,6 +312,7 @@ export class ConductIPAPI {
 				if (roomsChanged || panelSalvosChanged) {
 					// Rooms/panels/salvos structure changed - update actions, presets, and variables
 					this.controller.updateActions()
+					this.controller.updateFeedbacks()
 					this.controller.updatePresets()
 					this.controller.updateVariables()
 				}
