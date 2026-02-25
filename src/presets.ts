@@ -15,6 +15,45 @@ export function GetPresets(api: ConductIPAPI): CompanionPresetDefinitions {
 		if (room.panels && Array.isArray(room.panels)) {
 			for (const panel of room.panels) {
 				const salvos = api.panelSalvos[panel.id] || []
+				presets[`run_salvo_${panel.id}_no_connections`] = {
+					type: 'button',
+					category: `${room.label} - ${panel.label || 'Room'}`,
+					name: `No Connections on ${panel.label || 'Panel'}`,
+					style: {
+						color: COLORS.WHITE,
+						bgcolor: COLORS.MATROX_BLUE_INACTIVE,
+						size: 'auto',
+						text: `No Connections`,
+						show_topbar: false,
+					},
+					steps: [
+						{
+							down: [
+								{
+									actionId: 'run_salvo',
+									options: {
+										panelId: panel.id,
+										salvoId: 'no_connections',
+									},
+								},
+							],
+							up: [],
+						},
+					],
+					feedbacks: [
+						{
+							feedbackId: 'no_connections',
+							options: {
+								panelId: panel.id,
+							},
+							style: {
+								color: COLORS.WHITE,
+								bgcolor: COLORS.MATROX_BLUE_ACTIVE,
+							},
+						},
+					],
+				}
+
 				for (const salvo of salvos) {
 					presets[`run_salvo_${panel.id}_${salvo.id}`] = {
 						type: 'button',
@@ -25,6 +64,7 @@ export function GetPresets(api: ConductIPAPI): CompanionPresetDefinitions {
 							bgcolor: COLORS.MATROX_BLUE_INACTIVE,
 							size: 'auto',
 							text: `$(this:salvo_${salvo.id})`,
+							show_topbar: false,
 						},
 						steps: [
 							{

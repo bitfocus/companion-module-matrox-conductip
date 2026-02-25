@@ -312,12 +312,14 @@ export class ConductIPAPI {
 				if (roomsChanged || panelSalvosChanged) {
 					// Rooms/panels/salvos structure changed - update actions, presets, and variables
 					this.controller.updateActions()
+					this.controller.updateFeedbacks()
 					this.controller.updatePresets()
 					this.controller.updateVariables()
 				}
 				// Active salvos changed - update feedbacks
 				if (activeSalvosChanged) {
-					this.controller.updateFeedbacks()
+					this.controller.checkFeedbacks('salvo_active')
+					this.controller.checkFeedbacks('no_connections')
 				}
 			}
 		} else if (roomsInfo === null) {
@@ -378,6 +380,7 @@ export class ConductIPAPI {
 		// Only check feedbacks if active salvos changed
 		if (changed) {
 			this.controller.checkFeedbacks('salvo_active')
+			this.controller.checkFeedbacks('no_connections')
 		}
 		return changed
 	}

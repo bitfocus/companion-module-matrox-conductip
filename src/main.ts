@@ -46,12 +46,8 @@ class MatroxConductIPInstance extends InstanceBase<ModuleConfig> implements Cond
 
 		await this.api.destroy() // Stop polling
 
-		// Reconfigure HTTPS agent AFTER destroy to ensure it's properly initialized
-		// This is especially important on first install when config might not be fully initialized
-		// Must be done after destroy() since destroy() clears the agent
 		this.api.configureHttpsAgent()
 
-		// Re-init logic essentially
 		if (this.config.host && this.config.username && this.config.password) {
 			// We don't need to re-create variables/actions immediately if structure hasn't changed,
 			// but fetching data will trigger updates.

@@ -5,7 +5,7 @@ import { getPanelChoices, getSalvoChoices } from './utils.js'
 export function GetActions(api: ConductIPAPI): CompanionActionDefinitions {
 	return {
 		run_salvo: {
-			name: 'Take Preset',
+			name: 'Panel -Take Preset',
 			options: [
 				{
 					type: 'dropdown',
@@ -27,21 +27,10 @@ export function GetActions(api: ConductIPAPI): CompanionActionDefinitions {
 			],
 			callback: async (actionEvent: CompanionActionEvent) => {
 				const { panelId, salvoId } = actionEvent.options as { panelId: string; salvoId: string }
-				if (salvoId === 'remove_all_connections') {
-					const result = await api.makeApiRequest('DELETE', `/panels/${panelId}/connections`)
-					if (result === true) {
-						// Success
-					} else {
-						// Error
-					}
+				if (salvoId === 'no_connections') {
+					await api.makeApiRequest('DELETE', `/panels/${panelId}/connections`)
 				} else if (salvoId) {
-					const result = await api.makeApiRequest('POST', `/salvos/${salvoId}`)
-					if (result === true) {
-						await api.fetchActiveSalvos()
-						// Success
-					} else {
-						// Error
-					}
+					await api.makeApiRequest('POST', `/salvos/${salvoId}`)
 				}
 			},
 		},
